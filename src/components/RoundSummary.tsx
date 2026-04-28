@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { WIN_TARGET } from '../constants';
 
 interface RoundSummaryProps {
   score: number;
+  winTarget: number;
   foundWords: Map<string, number>;
   allWords: Map<string, number>;
 }
 
-export function RoundSummary({ score, foundWords, allWords }: RoundSummaryProps) {
+export function RoundSummary({ score, winTarget, foundWords, allWords }: RoundSummaryProps) {
   const [showMissed, setShowMissed] = useState(false);
 
-  const won = score >= WIN_TARGET;
-  const found = [...foundWords.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const won = score >= winTarget;
   const missed = [...allWords.entries()]
     .filter(([w]) => !foundWords.has(w))
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
@@ -26,28 +25,10 @@ export function RoundSummary({ score, foundWords, allWords }: RoundSummaryProps)
       </div>
       <div className="summary-score">
         <span>{score}</span>
-        <span className="summary-target"> / {WIN_TARGET} target</span>
+        <span className="summary-target"> / {winTarget} target</span>
       </div>
       <div className="summary-meta">
         Best possible on this board: <strong>{maxScore}</strong> pts ({allWords.size} words)
-      </div>
-
-      <div className="summary-section">
-        <div className="summary-section-title">
-          You found ({found.length})
-        </div>
-        {found.length > 0 ? (
-          <ul className="summary-words">
-            {found.map(([word, pts]) => (
-              <li key={word} className="summary-word-item">
-                <span>{word}</span>
-                <span className="found-word-pts">{pts}pt</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="no-words">No words found</p>
-        )}
       </div>
 
       <div className="summary-section">

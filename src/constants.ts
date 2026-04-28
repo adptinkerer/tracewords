@@ -19,12 +19,6 @@ export const BOGGLE_DICE: string[][] = [
 
 export const ROUND_SECONDS = 90;
 export const MIN_WORD_LETTERS = 3;
-export const WIN_TARGET = 20;
 
-export const SCORE_TABLE: [number, number][] = [
-  [8, 11],
-  [7, 5],
-  [6, 3],
-  [5, 2],
-  [3, 1],
-];
+// Win = WIN_PERCENT% of the maximum points possible on this board.
+export const WIN_PERCENT = 10;

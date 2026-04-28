@@ -31,4 +31,5 @@ export type GameAction =
   | { type: 'CANCEL_DRAG' }
   | { type: 'WORD_RESULT'; kind: FlashKind; word: string; pts: number }
   | { type: 'CLEAR_FLASH' }
-  | { type: 'END_ROUND' };
+  | { type: 'END_ROUND' }
+  | { type: 'SET_PATH'; path: number[] };

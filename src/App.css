@@ -62,6 +62,11 @@ body {
   color: #90caf9;
 }
 
+.score-target {
+  color: #5d7290;
+  font-weight: 500;
+}
+
 /* Current word display */
 .current-word {
   width: 100%;
@@ -77,7 +82,7 @@ body {
 }
 
 .current-word-text {
-  font-size: 1.5rem;
+  font-size: 2.3rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   min-width: 4ch;
@@ -108,6 +113,37 @@ body {
     justify-content: center;
     align-items: start;
   }
+}
+
+/* Typing input */
+.typing-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  background: #16213e;
+  color: #e0e0e0;
+  border: 1px solid #1f2a44;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s;
+  text-transform: uppercase;
+}
+
+.typing-input::placeholder {
+  color: #5d7290;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.typing-input:focus {
+  border-color: #1565c0;
+}
+
+.typing-input:disabled {
+  opacity: 0.4;
 }
 
 /* Grid */
@@ -157,6 +193,12 @@ body {
 .tile-hidden {
   background: #0a2342;
   color: transparent;
+}
+
+.grid-greyed {
+  opacity: 0.55;
+  pointer-events: none;
+  filter: saturate(0.6);
 }
 
 /* Found words */

@@ -5,8 +5,10 @@ import { useGame } from './hooks/useGame';
 import { useSortMode } from './hooks/useSortMode';
 import { pathToWord } from './utils/wordBuilder';
 import { solveBoard } from './utils/solver';
+import { WIN_PERCENT } from './constants';
 import { Header } from './components/Header';
 import { CurrentWord } from './components/CurrentWord';
+import { TypingInput } from './components/TypingInput';
 import { Grid } from './components/Grid';
 import { FoundWords } from './components/FoundWords';
 import { ActionButton } from './components/ActionButton';
@@ -14,45 +16,84 @@ import { RoundSummary } from './components/RoundSummary';
 
 export default function App() {
   const dict = useDictionary();
-  const { state, startRound, newRound, giveUp, onDragStart, onDragEnter, onDragEnd, onCancelDrag } =
-    useGame(dict);
+  const {
+    state,
+    startRound,
+    newRound,
+    giveUp,
+    setPath,
+    submitTypedWord,
+    onDragStart,
+    onDragEnter,
+    onDragEnd,
+    onCancelDrag,
+  } = useGame(dict);
   const [sortMode, setSortMode] = useSortMode();
 
   const { display } = pathToWord(state.path, state.tiles);
 
-  // Compute every possible word on the board only when the round ends.
-  // Memoized on (phase, tiles) so the DFS runs once per ended round.
+  // Run the solver once per board (after dictionary is loaded). Used both for
+  // computing the dynamic win target and the round-end summary. ~100ms.
   const allWords = useMemo(() => {
-    if (state.phase !== 'ended') return new Map<string, number>();
+    if (dict.size === 0) return new Map<string, number>();
     return solveBoard(state.tiles, dict);
-  }, [state.phase, state.tiles, dict]);
+  }, [state.tiles, dict]);
+
+  const maxScore = useMemo(() => {
+    let s = 0;
+    for (const v of allWords.values()) s += v;
+    return s;
+  }, [allWords]);
+
+  // Win = WIN_PERCENT% of max score, rounded up. Min 1.
+  const winTarget = maxScore > 0 ? Math.max(1, Math.ceil(maxScore * WIN_PERCENT / 100)) : 0;
+
+  const ended = state.phase === 'ended';
+  const playing = state.phase === 'playing';
+  const idle = state.phase === 'idle';
 
   return (
     <div className="app">
-      <Header timeLeft={state.timeLeft} score={state.score} />
+      <Header
+        timeLeft={state.timeLeft}
+        score={state.score}
+        winTarget={winTarget}
+        showTarget={!idle && winTarget > 0}
+      />
 
       <CurrentWord display={display} flash={state.flash} />
 
-      {state.phase === 'ended' ? (
+      {playing && (
+        <TypingInput
+          active={playing}
+          tiles={state.tiles}
+          setPath={setPath}
+          submitTypedWord={submitTypedWord}
+        />
+      )}
+
+      <div className="play-area">
+        <Grid
+          tiles={state.tiles}
+          path={state.path}
+          active={playing}
+          hideLetters={idle}
+          greyed={ended}
+          onDragStart={onDragStart}
+          onDragEnter={onDragEnter}
+          onDragEnd={onDragEnd}
+          onCancelDrag={onCancelDrag}
+        />
+        <FoundWords foundWords={state.foundWords} sortMode={sortMode} onSortChange={setSortMode} />
+      </div>
+
+      {ended && (
         <RoundSummary
           score={state.score}
+          winTarget={winTarget}
           foundWords={state.foundWords}
           allWords={allWords}
         />
-      ) : (
-        <div className="play-area">
-          <Grid
-            tiles={state.tiles}
-            path={state.path}
-            active={state.phase === 'playing'}
-            hideLetters={state.phase === 'idle'}
-            onDragStart={onDragStart}
-            onDragEnter={onDragEnter}
-            onDragEnd={onDragEnd}
-            onCancelDrag={onCancelDrag}
-          />
-          <FoundWords foundWords={state.foundWords} sortMode={sortMode} onSortChange={setSortMode} />
-        </div>
       )}
 
       <ActionButton
@@ -62,8 +103,10 @@ export default function App() {
         onGiveUp={giveUp}
       />
 
-      {state.phase === 'idle' && (
-        <p className="instructions">Drag through adjacent letters to form words. Minimum 3 letters.</p>
+      {idle && (
+        <p className="instructions">
+          Drag through adjacent letters or type a word to score. Min 3 letters.
+        </p>
       )}
     </div>
   );

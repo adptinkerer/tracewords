@@ -1,9 +1,11 @@
 interface HeaderProps {
   timeLeft: number;
   score: number;
+  winTarget: number | null;
+  showTarget: boolean;
 }
 
-export function Header({ timeLeft, score }: HeaderProps) {
+export function Header({ timeLeft, score, winTarget, showTarget }: HeaderProps) {
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
   const formatted = `${mins}:${String(secs).padStart(2, '0')}`;
@@ -12,7 +14,12 @@ export function Header({ timeLeft, score }: HeaderProps) {
   return (
     <header className="header">
       <span className={`timer${urgent ? ' timer-urgent' : ''}`}>{formatted}</span>
-      <span className="score">Score: {score}</span>
+      <span className="score">
+        Score: {score}
+        {showTarget && winTarget !== null && (
+          <span className="score-target"> / {winTarget}</span>
+        )}
+      </span>
     </header>
   );
 }

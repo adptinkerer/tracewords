@@ -6,6 +6,7 @@ interface GridProps {
   path: number[];
   active: boolean;
   hideLetters: boolean;
+  greyed: boolean;
   onDragStart: (idx: number) => void;
   onDragEnter: (idx: number) => void;
   onDragEnd: () => void;
@@ -54,6 +55,7 @@ export function Grid({
   path,
   active,
   hideLetters,
+  greyed,
   onDragStart,
   onDragEnter,
   onDragEnd,
@@ -109,7 +111,7 @@ export function Grid({
 
   return (
     <div
-      className="grid"
+      className={`grid${greyed ? ' grid-greyed' : ''}`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

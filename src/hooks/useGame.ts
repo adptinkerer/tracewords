@@ -5,6 +5,7 @@ import { generateBoard } from '../utils/dice';
 import { areAdjacent } from '../utils/adjacency';
 import { pathToWord, letterCount } from '../utils/wordBuilder';
 import { scoreWord } from '../utils/scoring';
+import { findPath } from '../utils/findPath';
 
 function buildInitialState(tiles: Tile[]): GameState {
   return {
@@ -89,6 +90,10 @@ function reducer(state: GameState, action: GameAction): GameState {
       if (state.phase !== 'playing') return state;
       return { ...state, phase: 'ended', path: [], timeLeft: 0 };
 
+    case 'SET_PATH':
+      if (state.phase !== 'playing') return state;
+      return { ...state, path: action.path };
+
     default:
       return state;
   }
@@ -131,9 +136,10 @@ export function useGame(dict: Set<string>) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.phase]);
 
-  function submitWord(s: GameState) {
-    if (s.path.length === 0) return;
-    const { canonical } = pathToWord(s.path, s.tiles);
+  function submitWord(s: GameState, pathOverride?: number[]) {
+    const path = pathOverride ?? s.path;
+    if (path.length === 0) return;
+    const { canonical } = pathToWord(path, s.tiles);
     const len = letterCount(canonical);
 
     if (len < MIN_WORD_LETTERS) {
@@ -184,5 +190,41 @@ export function useGame(dict: Set<string>) {
 
   const giveUp = useCallback(() => dispatch({ type: 'END_ROUND' }), []);
 
-  return { state, startRound, newRound, giveUp, onDragStart, onDragEnter, onDragEnd, onCancelDrag };
+  const setPath = useCallback((path: number[]) => {
+    dispatch({ type: 'SET_PATH', path });
+  }, []);
+
+  // Submit a word entered via typing. Looks up a trace path; if none exists or
+  // word is too short, shows the invalid flash. Otherwise routes through the
+  // same submitWord pipeline as drag.
+  const submitTypedWord = useCallback((word: string) => {
+    const s = stateRef.current;
+    if (s.phase !== 'playing') return;
+    const lower = word.toLowerCase();
+    if (lower.length < MIN_WORD_LETTERS) {
+      dispatch({ type: 'WORD_RESULT', kind: 'invalid', word: lower, pts: 0 });
+      return;
+    }
+    const path = findPath(s.tiles, lower);
+    if (!path) {
+      // Letters don't form a valid trace on this board
+      dispatch({ type: 'WORD_RESULT', kind: 'invalid', word: lower, pts: 0 });
+      return;
+    }
+    submitWord(s, path);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dict]);
+
+  return {
+    state,
+    startRound,
+    newRound,
+    giveUp,
+    setPath,
+    submitTypedWord,
+    onDragStart,
+    onDragEnter,
+    onDragEnd,
+    onCancelDrag,
+  };
 }
