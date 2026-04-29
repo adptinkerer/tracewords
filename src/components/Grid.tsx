@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import type { Tile as TileType } from '../types';
 import { Tile } from './Tile';
 
@@ -40,7 +39,6 @@ function tileIndexAtPoint(x: number, y: number): number | null {
   return parseInt(raw, 10);
 }
 
-// For mousedown/touchstart we want the full tile area (don't make the user aim).
 function tileIndexAtPointFull(x: number, y: number): number | null {
   const el = document.elementFromPoint(x, y);
   if (!el) return null;
@@ -49,30 +47,6 @@ function tileIndexAtPointFull(x: number, y: number): number | null {
   const raw = node.dataset.tileIndex;
   if (raw === undefined) return null;
   return parseInt(raw, 10);
-}
-
-// Body scroll lock using the position:fixed pattern. The most reliable
-// cross-browser way to prevent the page from scrolling during a touch drag.
-// We preserve the current scroll position and restore it on release.
-function lockBodyScroll() {
-  const scrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
-  document.body.dataset.scrollY = String(scrollY);
-}
-
-function unlockBodyScroll() {
-  const scrollY = parseInt(document.body.dataset.scrollY ?? '0', 10);
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
-  delete document.body.dataset.scrollY;
-  window.scrollTo(0, scrollY);
 }
 
 export function Grid({
@@ -88,84 +62,54 @@ export function Grid({
 }: GridProps) {
   const pathSet = new Set(path);
   const pathHead = path.length > 0 ? path[path.length - 1] : -1;
-  const gridRef = useRef<HTMLDivElement>(null);
 
-  // Native, non-passive touch listeners. React's onTouchXxx handlers can run
-  // as passive: true on some browsers, which silently ignores preventDefault()
-  // — letting the page scroll mid-drag. Attaching via addEventListener with
-  // explicit { passive: false } guarantees preventDefault works.
-  useEffect(() => {
-    const el = gridRef.current;
-    if (!el || !active) return;
+  // Pointer Events unify mouse + touch + pen. Combined with `touch-action: none`
+  // on the grid (CSS) and setPointerCapture on the element, the browser will
+  // not scroll/zoom in response to drags that start on the grid. This is the
+  // modern, reliable replacement for mouse+touch event juggling.
 
-    const onStart = (e: TouchEvent) => {
-      e.preventDefault();
-      lockBodyScroll();
-      const t = e.touches[0];
-      const idx = tileIndexAtPointFull(t.clientX, t.clientY);
-      if (idx !== null) onDragStart(idx);
-    };
-    const onMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const t = e.touches[0];
-      const idx = tileIndexAtPoint(t.clientX, t.clientY);
-      if (idx !== null) onDragEnter(idx);
-    };
-    const onEnd = (e: TouchEvent) => {
-      e.preventDefault();
-      unlockBodyScroll();
-      onDragEnd();
-    };
-    const onCancel = () => {
-      unlockBodyScroll();
-      onCancelDrag();
-    };
-
-    el.addEventListener('touchstart', onStart, { passive: false });
-    el.addEventListener('touchmove', onMove, { passive: false });
-    el.addEventListener('touchend', onEnd, { passive: false });
-    el.addEventListener('touchcancel', onCancel, { passive: false });
-    return () => {
-      el.removeEventListener('touchstart', onStart);
-      el.removeEventListener('touchmove', onMove);
-      el.removeEventListener('touchend', onEnd);
-      el.removeEventListener('touchcancel', onCancel);
-      // Safety: if the round ends mid-drag, ensure scroll is unlocked.
-      if (document.body.dataset.scrollY !== undefined) unlockBodyScroll();
-    };
-  }, [active, onDragStart, onDragEnter, onDragEnd, onCancelDrag]);
-
-  function handleMouseDown(e: React.MouseEvent) {
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     if (!active) return;
     e.preventDefault();
+    // Capture the pointer so that subsequent pointermove/up events fire on
+    // this element even if the finger drifts outside it. Without capture,
+    // the browser treats finger-leaving-element as a normal scroll gesture.
+    e.currentTarget.setPointerCapture(e.pointerId);
     const idx = tileIndexAtPointFull(e.clientX, e.clientY);
     if (idx !== null) onDragStart(idx);
   }
 
-  function handleMouseMove(e: React.MouseEvent) {
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
     if (!active) return;
+    // Ignore moves when not in an active drag (e.g., mouse hover w/o press).
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
     const idx = tileIndexAtPoint(e.clientX, e.clientY);
     if (idx !== null) onDragEnter(idx);
   }
 
-  function handleMouseUp() {
+  function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
     if (!active) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
     onDragEnd();
   }
 
-  function handleMouseLeave() {
+  function handlePointerCancel(e: React.PointerEvent<HTMLDivElement>) {
     if (!active) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
     onCancelDrag();
   }
 
   return (
     <div
-      ref={gridRef}
       className={`grid${greyed ? ' grid-greyed' : ''}`}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
     >
       {tiles.map((tile) => (
         <Tile

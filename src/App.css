@@ -16,6 +16,32 @@ body {
   overscroll-behavior: none; /* prevent iOS rubber-band */
 }
 
+/* On mobile/tablet: completely lock the page. No scroll, no rubber-band, no
+   pinch-zoom layout shifts. The whole game lives inside the viewport. */
+@media (max-width: 768px) {
+  html, body {
+    overflow: hidden;
+    height: 100dvh;
+    height: 100vh; /* fallback for older browsers */
+    overscroll-behavior: none;
+  }
+  body {
+    padding: 8px;
+    align-items: stretch;
+  }
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+  .app {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
+    gap: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 #root {
   width: 100%;
@@ -465,6 +491,136 @@ body {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Sidebar (desktop) vs compact recent strip (mobile) */
+.found-words-sidebar { width: 100%; }
+.recent-words-mobile { display: none; width: 100%; }
+
+@media (max-width: 768px) {
+  .found-words-sidebar { display: none; }
+  .recent-words-mobile { display: block; }
+}
+
+/* Recent words strip (mobile) */
+.recent-words {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #16213e;
+  border-radius: 8px;
+}
+
+.recent-words-list {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.recent-words-empty {
+  color: #5d7290;
+  font-size: 0.85rem;
+}
+
+.recent-words-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #0f3460;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.recent-words-text {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recent-words-pts {
+  font-size: 0.75rem;
+  color: #90caf9;
+}
+
+.view-all-btn {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: transparent;
+  color: #90caf9;
+  border: 1px solid #1565c0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Words modal */
+.words-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  z-index: 100;
+  padding: 0;
+}
+
+.words-modal {
+  background: #1a1a2e;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.words-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #16213e;
+  border-bottom: 1px solid #1f2a44;
+}
+
+.words-modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #90caf9;
+}
+
+.words-modal-close {
+  width: 36px;
+  height: 36px;
+  font-size: 1.6rem;
+  line-height: 1;
+  background: transparent;
+  color: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.words-modal-close:hover { background: #1f2a44; }
+
+.words-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.words-modal-body .found-words {
+  max-height: none; /* parent .words-modal-body handles scroll */
 }
 
 /* Mobile adjustments */

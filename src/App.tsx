@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import './App.css';
 import { useDictionary } from './hooks/useDictionary';
 import { useGame } from './hooks/useGame';
@@ -11,6 +11,8 @@ import { CurrentWord } from './components/CurrentWord';
 import { TypingInput } from './components/TypingInput';
 import { Grid } from './components/Grid';
 import { FoundWords } from './components/FoundWords';
+import { RecentWords } from './components/RecentWords';
+import { WordsModal } from './components/WordsModal';
 import { ActionButton } from './components/ActionButton';
 import { RoundSummary } from './components/RoundSummary';
 
@@ -29,6 +31,7 @@ export default function App() {
     onCancelDrag,
   } = useGame(dict);
   const [sortMode, setSortMode] = useSortMode();
+  const [wordsModalOpen, setWordsModalOpen] = useState(false);
 
   const { display } = pathToWord(state.path, state.tiles);
 
@@ -45,7 +48,6 @@ export default function App() {
     return s;
   }, [allWords]);
 
-  // Win = WIN_PERCENT% of max score, rounded up. Min 1.
   const winTarget = maxScore > 0 ? Math.max(1, Math.ceil(maxScore * WIN_PERCENT / 100)) : 0;
 
   const ended = state.phase === 'ended';
@@ -84,7 +86,22 @@ export default function App() {
           onDragEnd={onDragEnd}
           onCancelDrag={onCancelDrag}
         />
-        <FoundWords foundWords={state.foundWords} sortMode={sortMode} onSortChange={setSortMode} />
+        {/* Desktop sidebar — hidden on mobile via CSS */}
+        <div className="found-words-sidebar">
+          <FoundWords
+            foundWords={state.foundWords}
+            sortMode={sortMode}
+            onSortChange={setSortMode}
+          />
+        </div>
+      </div>
+
+      {/* Mobile compact strip — hidden on desktop via CSS */}
+      <div className="recent-words-mobile">
+        <RecentWords
+          foundWords={state.foundWords}
+          onViewAll={() => setWordsModalOpen(true)}
+        />
       </div>
 
       {ended && (
@@ -108,6 +125,14 @@ export default function App() {
           Drag through adjacent letters or type a word to score. Min 3 letters.
         </p>
       )}
+
+      <WordsModal
+        open={wordsModalOpen}
+        foundWords={state.foundWords}
+        sortMode={sortMode}
+        onSortChange={setSortMode}
+        onClose={() => setWordsModalOpen(false)}
+      />
     </div>
   );
 }
