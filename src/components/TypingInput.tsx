@@ -13,9 +13,16 @@ export function TypingInput({ active, tiles, setPath, submitTypedWord }: TypingI
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus the input when the round becomes active
+  // Focus the input when the round becomes active — desktop / pointer-fine
+  // devices only. On phones/tablets, auto-focusing would pop the soft keyboard
+  // and disrupt the layout for someone who wants to drag.
   useEffect(() => {
-    if (active) inputRef.current?.focus();
+    if (!active) return;
+    const isCoarsePointer =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(pointer: coarse)').matches;
+    if (!isCoarsePointer) inputRef.current?.focus();
   }, [active]);
 
   // Clear input + path when the round ends

@@ -90,6 +90,7 @@ export function Grid({
   function handleTouchStart(e: React.TouchEvent) {
     if (!active) return;
     e.preventDefault();
+    document.body.classList.add('drag-active');
     const touch = e.touches[0];
     const idx = tileIndexAtPointFull(touch.clientX, touch.clientY);
     if (idx !== null) onDragStart(idx);
@@ -106,7 +107,14 @@ export function Grid({
   function handleTouchEnd(e: React.TouchEvent) {
     if (!active) return;
     e.preventDefault();
+    document.body.classList.remove('drag-active');
     onDragEnd();
+  }
+
+  function handleTouchCancel() {
+    if (!active) return;
+    document.body.classList.remove('drag-active');
+    onCancelDrag();
   }
 
   return (
@@ -119,6 +127,7 @@ export function Grid({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
     >
       {tiles.map((tile) => (
         <Tile
