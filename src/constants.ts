@@ -21,4 +21,4 @@ export const ROUND_SECONDS = 90;
 export const MIN_WORD_LETTERS = 3;
 
 // Win = WIN_PERCENT% of the maximum points possible on this board.
-export const WIN_PERCENT = 10;
+export const WIN_PERCENT = 7;

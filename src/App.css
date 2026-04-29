@@ -16,12 +16,6 @@ body {
   overscroll-behavior: none; /* prevent iOS rubber-band */
 }
 
-/* While a touch-drag is in progress on the grid, lock body scroll so the
-   page doesn't scroll out from under the user's finger. */
-body.drag-active {
-  overflow: hidden;
-  touch-action: none;
-}
 
 #root {
   width: 100%;
