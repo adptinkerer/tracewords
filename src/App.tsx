@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useDictionary } from './hooks/useDictionary';
 import { useGame } from './hooks/useGame';
@@ -53,6 +53,14 @@ export default function App() {
   const ended = state.phase === 'ended';
   const playing = state.phase === 'playing';
   const idle = state.phase === 'idle';
+
+  // While actively playing on mobile, fully lock the page (touch-action: none,
+  // overflow: hidden, position: fixed). The CSS rule keys off body.is-playing.
+  useEffect(() => {
+    if (playing) document.body.classList.add('is-playing');
+    else document.body.classList.remove('is-playing');
+    return () => document.body.classList.remove('is-playing');
+  }, [playing]);
 
   return (
     <div className="app">

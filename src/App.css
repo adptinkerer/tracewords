@@ -39,6 +39,28 @@ body {
     padding: 0;
     gap: 10px;
     -webkit-overflow-scrolling: touch;
+    /* Pad the bottom so the sticky action button rests in clear space and
+       doesn't visually cover other content when the page is scrolled. */
+    padding-bottom: 64px;
+  }
+  /* While actively playing: hard-lock everything. No scroll within .app, no
+     touch-action anywhere except where we explicitly allow it. */
+  body.is-playing {
+    touch-action: none;
+  }
+  body.is-playing .app {
+    overflow: hidden;
+    touch-action: none;
+  }
+  /* Sticky-bottom action button on mobile so it's always reachable, even when
+     content (e.g. round summary) is taller than the viewport. The .app has
+     padding-bottom matching the button area so it rests cleanly. */
+  .app > .action-btn {
+    position: sticky;
+    bottom: 8px;
+    z-index: 5;
+    margin-top: auto; /* push to the bottom when content is short */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
 }
 
