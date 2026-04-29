@@ -62,6 +62,25 @@ export default function App() {
     return () => document.body.classList.remove('is-playing');
   }, [playing]);
 
+  // Global touchmove preventDefault during play. Stops Android URL-bar
+  // auto-hide/show from shifting the viewport during diagonal drags. The
+  // browser's address-bar gesture is handled at a layer above CSS overflow,
+  // so the only way to suppress it is preventDefault on the touch event
+  // itself. Modal scrolling is exempted so users can still scroll the
+  // missed-words list. Attached as a passive: false listener -- React's
+  // synthetic events run as passive in some Android browsers, which would
+  // make preventDefault a no-op.
+  useEffect(() => {
+    if (!playing) return;
+    const onMove = (e: TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('.words-modal-body')) return; // allow modal scroll
+      e.preventDefault();
+    };
+    document.addEventListener('touchmove', onMove, { passive: false });
+    return () => document.removeEventListener('touchmove', onMove);
+  }, [playing]);
+
   return (
     <div className="app">
       <Header
