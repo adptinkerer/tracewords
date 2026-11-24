@@ -3,16 +3,19 @@ import type { ItemId, PerkId } from './types';
 export interface ItemDef {
   id: ItemId;
   name: string;
+  short: string;
   icon: string;
   basePrice: number;
   desc: string;
 }
 
 export const ITEMS: ItemDef[] = [
-  { id: 'bomb',  name: 'Bomb',     icon: '💣', basePrice: 3, desc: 'Blow up a tile you pick. It refills at your current difficulty.' },
-  { id: 'vowel', name: 'Vowel',    icon: '🅰️', basePrice: 2, desc: 'Turns a random consonant into a vowel.' },
-  { id: 'wild',  name: 'Blank',    icon: '❔', basePrice: 5, desc: 'Turn a tile you pick into a blank that counts as any letter. Scores 0.' },
-  { id: 'remix', name: 'Remix',    icon: '🎲', basePrice: 3, desc: 'Shuffles every point value on the board.' },
+  { id: 'bomb',      name: 'Bomb',      short: 'Bomb',    icon: '💣', basePrice: 3, desc: 'Blow up a tile you pick. It refills at your current difficulty.' },
+  { id: 'consonant', name: 'Consonant', short: 'Cons.',   icon: '🅱️', basePrice: 2, desc: 'Turns a random vowel into a consonant. Sold while letters are easy.' },
+  { id: 'vowel',     name: 'Vowel',     short: 'Vowel',   icon: '🅰️', basePrice: 2, desc: 'Turns a random consonant into a vowel. Sold once letters get tricky.' },
+  { id: 'wild',      name: 'Blank',     short: 'Blank',   icon: '❔', basePrice: 5, desc: 'Turn a tile you pick into a blank that counts as any letter. Scores 0.' },
+  { id: 'remix',     name: 'Remix',     short: 'Remix',   icon: '🎲', basePrice: 3, desc: 'Shuffles every point value on the board.' },
+  { id: 'shuffle',   name: 'Shuffle',   short: 'Shuffle', icon: '🔀', basePrice: 7, desc: 'Rearranges every tile on the board into new positions.' },
 ];
 
 export interface PerkDef {

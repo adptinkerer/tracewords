@@ -36,6 +36,10 @@ function pickConsonant(tier: Tier): string {
   });
 }
 
+export function pickConsonantAt(score: number, perks: PerkId[]): string {
+  return pickConsonant(TIERS[tierIndex(score, perks)]);
+}
+
 export function isVowelFace(face: string): boolean {
   return VOWELS.includes(face);
 }

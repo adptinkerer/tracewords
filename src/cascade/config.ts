@@ -59,7 +59,10 @@ export function minLength(level: number): number {
 
 export const LEVEL_CLEAR_BONUS = 3;
 export const MAX_PERKS = 4;
-export const STARTING_INVENTORY = { bomb: 1, vowel: 0, wild: 0, remix: 0 };
+export const STARTING_INVENTORY = { bomb: 1, consonant: 0, vowel: 0, wild: 0, remix: 0, shuffle: 0 };
+
+// Consonants sell while letters are Gentle/Steady (vowel-rich); Vowels sell after.
+export const CONSONANT_MAX_TIER = 1;
 
 export function price(base: number, level: number, bought: number): number {
   return base + Math.floor((level - 1) / 2) + bought;

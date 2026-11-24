@@ -6,8 +6,7 @@ import { Grid } from '../components/Grid';
 import { TypingInput } from '../components/TypingInput';
 import { useCascade } from './useCascade';
 import type { CTile } from './types';
-import { ITEM_BY_ID } from './items';
-import { CascadeTile, GameOver, Hud, Inventory, Shop, Title, WordLog, type Best } from './components';
+import { CascadeTile, GameOver, Hud, Inventory, PerkChips, Shop, Title, WordLog, type Best } from './components';
 
 const BEST_KEY = 'cascade-best';
 
@@ -65,18 +64,23 @@ export default function App() {
   if (s.phase === 'title') return <div className="app c-app"><Title best={best} onStart={g.startRun} /></div>;
 
   return (
-    <div className="app c-app">
+    <div className={`app c-app${onBoard ? ' c-playing' : ''}`}>
       <Hud s={s} />
 
       {onBoard && (
         <>
-          <div className={`current-word c-current${s.flash ? ` c-flash-${s.flash.kind}` : ''}`}>
-            <span className="current-word-text">
-              {s.targeting
-                ? `Tap a tile to ${s.targeting === 'bomb' ? 'bomb 💣' : 'make blank ❔'}`
-                : pathWord || s.flash?.text || ' '}
-            </span>
-          </div>
+          {s.targeting ? (
+            <button className="current-word c-current c-aim" onClick={() => g.applyItem(s.targeting!)}>
+              <span className="current-word-text">
+                {s.targeting === 'bomb' ? '💣 Tap a tile to blow up' : '❔ Tap a tile to make blank'}
+              </span>
+              <span className="c-aim-cancel">Cancel</span>
+            </button>
+          ) : (
+            <div className={`current-word c-current${s.flash ? ` c-flash-${s.flash.kind}` : ''}`}>
+              <span className="current-word-text">{pathWord || s.flash?.text || '\u00a0'}</span>
+            </div>
+          )}
 
           {!s.targeting && (
             <TypingInput
@@ -111,14 +115,18 @@ export default function App() {
               )}
             />
             <div className="c-side">
+              <PerkChips perks={s.perks} />
               <WordLog history={s.history} />
             </div>
           </div>
 
+          <div className="c-recent" aria-hidden="true">
+            {s.history.slice(0, 6).map((w, i) => (
+              <span key={`${w.word}-${i}`}>{w.word.toUpperCase()} <b>+{w.pts}</b></span>
+            ))}
+          </div>
+
           <Inventory s={s} onUse={g.applyItem} onEnd={g.endRun} />
-          {s.targeting && (
-            <p className="c-sub">{ITEM_BY_ID[s.targeting].desc} Tap the item again to cancel.</p>
-          )}
         </>
       )}
 

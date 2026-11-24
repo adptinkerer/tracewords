@@ -2,7 +2,7 @@ import type { CTile, ItemId, PerkId, PlayedWord, RunState } from './types';
 import { ITEMS, ITEM_BY_ID, PERK_BY_ID } from './items';
 import { MAX_PERKS, TIERS, levelTarget, minLength, perkPrice } from './config';
 import { tierIndex } from './letters';
-import { itemPrice } from './useCascade';
+import { itemForSale, itemPrice } from './useCascade';
 
 export function CascadeTile({
   tile, inPath, head, popping, targeting,
@@ -45,7 +45,7 @@ export function Hud({ s }: { s: RunState }) {
         <span className="c-progress-text">{s.levelScore} / {target}</span>
       </div>
       <div className="c-hud-row c-hud-meta">
-        <span>Min {minLength(s.level)} letters</span>
+        <span>Min {minLength(s.level)} letters{s.perks.length > 0 && ` · ✨${s.perks.length} perk${s.perks.length > 1 ? 's' : ''}`}</span>
         <span>Letters: <strong className={`c-tier c-tier-${TIERS.indexOf(tier)}`}>{tier.name}</strong></span>
       </div>
     </header>
@@ -55,28 +55,39 @@ export function Hud({ s }: { s: RunState }) {
 export function Inventory({
   s, onUse, onEnd,
 }: { s: RunState; onUse: (id: ItemId) => void; onEnd: () => void }) {
+  const owned = ITEMS.filter((it) => s.inventory[it.id] > 0);
   return (
-    <div className="c-inventory">
-      {ITEMS.map((it) => (
-        <button
-          key={it.id}
-          className={`c-item${s.targeting === it.id ? ' c-item-active' : ''}`}
-          disabled={s.inventory[it.id] <= 0 || s.phase !== 'playing'}
-          onClick={() => onUse(it.id)}
-          title={it.desc}
-        >
-          <span className="c-item-icon">{it.icon}</span>
-          <span className="c-item-count">{s.inventory[it.id]}</span>
-        </button>
+    <div className="c-toolbar">
+      <div className="c-items">
+        {owned.length === 0 && <span className="c-items-empty">No items. Clear a level to shop.</span>}
+        {owned.map((it) => (
+          <button
+            key={it.id}
+            className={`c-item${s.targeting === it.id ? ' c-item-active' : ''}`}
+            disabled={s.phase !== 'playing'}
+            onClick={() => onUse(it.id)}
+            aria-label={`${it.name}: ${it.desc}`}
+          >
+            <span className="c-item-icon">{it.icon}</span>
+            <span className="c-item-name">{it.short}</span>
+            {s.inventory[it.id] > 1 && <span className="c-item-count">{s.inventory[it.id]}</span>}
+          </button>
+        ))}
+      </div>
+      <button className={`c-end${s.stuck ? ' c-end-urgent' : ''}`} onClick={onEnd}>
+        {s.stuck ? 'End run' : 'End'}
+      </button>
+    </div>
+  );
+}
+
+export function PerkChips({ perks }: { perks: PerkId[] }) {
+  if (perks.length === 0) return null;
+  return (
+    <div className="c-perk-row">
+      {perks.map((p) => (
+        <span key={p} className="c-perk-chip" title={PERK_BY_ID[p].desc}>{PERK_BY_ID[p].name}</span>
       ))}
-      <button className={`c-end${s.stuck ? ' c-end-urgent' : ''}`} onClick={onEnd}>End run</button>
-      {s.perks.length > 0 && (
-        <div className="c-perk-row">
-          {s.perks.map((p) => (
-            <span key={p} className="c-perk-chip" title={PERK_BY_ID[p].desc}>{PERK_BY_ID[p].name}</span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -97,7 +108,7 @@ export function Shop({
 
       <h3>Items</h3>
       <div className="c-shop-grid">
-        {ITEMS.map((it) => {
+        {ITEMS.filter((it) => itemForSale(s, it.id)).map((it) => {
           const cost = itemPrice(s, it.id);
           return (
             <button key={it.id} className="c-shop-card" disabled={s.coins < cost} onClick={() => onBuyItem(it.id)}>

@@ -11,7 +11,7 @@ export interface CTile {
   mult: Mult | null;
 }
 
-export type ItemId = 'bomb' | 'vowel' | 'wild' | 'remix';
+export type ItemId = 'bomb' | 'consonant' | 'vowel' | 'wild' | 'remix' | 'shuffle';
 
 export type PerkId =
   | 'heavy' | 'goldrush' | 'longgame' | 'interest' | 'lucky'

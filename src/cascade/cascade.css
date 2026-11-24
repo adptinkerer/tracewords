@@ -121,39 +121,68 @@
 .c-log-break { color: #5d7290; font-size: .8rem; align-self: center; }
 .c-log-pts { color: #81c784; font-weight: 700; font-variant-numeric: tabular-nums; }
 .c-log-empty { text-align: center; }
-@media (max-width: 768px) {
-  .c-log { max-height: 88px; flex-direction: row; flex-wrap: wrap; }
-  .c-log li { grid-template-columns: auto auto; }
-  .c-log-break { display: none; }
-}
 
-/* Inventory */
-.c-inventory {
+/* Item toolbar */
+.c-toolbar {
   width: 100%;
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: stretch; gap: 8px;
 }
+.c-items {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.c-items::-webkit-scrollbar { display: none; }
+.c-items-empty { align-self: center; color: #5d7290; font-size: .85rem; padding-left: 4px; }
 .c-item {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 12px;
+  position: relative; flex: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 58px; min-height: 52px; padding: 4px 8px;
   background: #16213e; color: #e0e0e0;
   border: 2px solid #1f2a44; border-radius: 10px;
-  font-size: 1.1rem; cursor: pointer;
+  cursor: pointer; font: inherit;
+  touch-action: manipulation;
 }
 .c-item:disabled { opacity: .35; cursor: default; }
+.c-item:focus-visible, .c-end:focus-visible, .c-aim:focus-visible { outline: 2px solid #ffd54f; outline-offset: 2px; }
+.c-item-icon { font-size: 1.3rem; line-height: 1.1; }
+.c-item-name { font-size: .68rem; font-weight: 700; letter-spacing: .04em; color: #90a4c8; }
+.c-item-count {
+  position: absolute; top: -6px; right: -6px;
+  min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px;
+  background: #ffd54f; color: #1a1a2e;
+  font-size: .75rem; font-weight: 800; line-height: 20px; text-align: center;
+}
 .c-item-active { border-color: #ffd54f; background: #3e2f0b; }
-.c-item-count { font-weight: 700; font-variant-numeric: tabular-nums; }
+.c-item-active .c-item-name { color: #ffd54f; }
 .c-end {
-  padding: 8px 14px; border-radius: 10px;
+  flex: none; min-width: 52px; padding: 0 12px; border-radius: 10px;
   background: transparent; color: #90a4c8;
-  border: 1px solid #37474f; cursor: pointer; font-weight: 600;
+  border: 1px solid #37474f; cursor: pointer; font: inherit; font-weight: 600; font-size: .85rem;
+  touch-action: manipulation;
 }
 .c-end-urgent { color: #fff; background: #c62828; border-color: #c62828; }
-.c-perk-row { width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+
+/* Aim banner (replaces the word bar while an item is armed) */
+.c-aim {
+  border: 2px solid #ffd54f; background: #3e2f0b; color: #fff;
+  cursor: pointer; font: inherit; justify-content: space-between;
+}
+.c-aim .current-word-text { font-size: 1.05rem; letter-spacing: .02em; text-align: left; }
+.c-aim-cancel {
+  flex: none; padding: 6px 12px; border-radius: 8px;
+  background: #ffd54f; color: #1a1a2e; font-weight: 800; font-size: .85rem;
+}
+
+.c-perk-row { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .c-perk-chip {
   font-size: .75rem; font-weight: 700;
   padding: 3px 8px; border-radius: 999px;
   background: #2a1f4a; color: #d1c4e9;
 }
+
+/* Recent words strip: phones only */
+.c-recent { display: none; }
 
 /* Panels: title, shop, game over */
 .c-panel {
@@ -200,7 +229,75 @@
 .c-over-stats strong { font-size: 2rem; color: #fff; }
 .c-over-stats span { font-size: .8rem; color: #90a4c8; text-transform: uppercase; letter-spacing: .08em; }
 
-@media (max-width: 400px) {
-  .c-value { font-size: .7rem; right: 4px; bottom: 2px; }
-  .c-mult { font-size: .55rem; }
+
+/* ---- Phones: the whole game fits one screen, nothing scrolls ---- */
+@media (max-width: 768px) {
+  @supports (height: 100dvh) {
+    html, body { height: 100dvh; }
+  }
+  .c-app.c-playing {
+    height: 100%;
+    gap: 6px;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+  .c-playing .c-hud { padding: 6px 10px; gap: 4px; }
+  .c-playing .c-level { font-size: 1.05rem; }
+  .c-playing .c-stat { font-size: .92rem; }
+  .c-playing .c-progress { height: 16px; }
+  .c-playing .c-progress-text { font-size: .72rem; }
+  .c-playing .c-hud-meta { font-size: .74rem; }
+  .c-playing .c-current { min-height: 40px; padding: 4px 10px; flex: none; }
+  .c-playing .c-current .current-word-text { font-size: 1.2rem; }
+  .c-playing .c-aim .current-word-text { font-size: .95rem; }
+
+  /* Board takes all remaining height and stays square */
+  .c-playing .play-area {
+    flex: 1 1 0; min-height: 0;
+    container-type: size;
+    display: flex; align-items: center; justify-content: center;
+    gap: 0;
+  }
+  .c-playing .grid {
+    flex: none;
+    width: min(100cqw, 100cqh);
+    max-width: none;
+    gap: min(2.4cqw, 2.4cqh);
+    padding: min(2.4cqw, 2.4cqh);
+  }
+  .c-playing .c-tile { font-size: min(10.5cqw, 10.5cqh); border-radius: 7px; }
+  .c-playing .c-value { font-size: min(3.2cqw, 3.2cqh); right: 4px; bottom: 2px; }
+  .c-playing .c-mult { font-size: min(2.4cqw, 2.4cqh); left: 3px; top: 3px; }
+  .c-playing .c-coin-dot { font-size: min(3.2cqw, 3.2cqh); }
+  .c-playing .c-side { display: none; }
+
+  .c-recent {
+    display: flex; gap: 10px; flex: none;
+    width: 100%; height: 18px; overflow: hidden;
+    font-size: .75rem; color: #90a4c8; white-space: nowrap;
+  }
+  .c-recent b { color: #81c784; }
+  .c-toolbar { flex: none; }
+}
+
+/* Touch devices drag; hide the typing box to give the board the room */
+@media (pointer: coarse) and (max-width: 768px) {
+  .c-playing .typing-input { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-tile, .c-pop { animation-duration: .01ms; }
+}
+
+/* Shop on phones: keep "next level" reachable */
+@media (max-width: 768px) {
+  .c-shop { padding: 14px; }
+  .c-shop-grid { grid-template-columns: 1fr 1fr; }
+  .c-shop-card { padding: 8px; }
+  .c-shop-desc { font-size: .72rem; }
+  .c-shop > .action-btn {
+    position: sticky; bottom: 8px; z-index: 5;
+    width: 100%; padding: 14px 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+  }
 }

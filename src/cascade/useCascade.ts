@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CTile, Flash, ItemId, PerkId, RunState } from './types';
 import {
-  LEVEL_CLEAR_BONUS, MAX_PERKS, STARTING_INVENTORY, levelTarget, minLength, price, perkPrice,
+  CONSONANT_MAX_TIER, LEVEL_CLEAR_BONUS, MAX_PERKS, STARTING_INVENTORY, levelTarget, minLength, price, perkPrice,
 } from './config';
 import { ITEM_BY_ID, PERKS } from './items';
-import { initialBoard, isVowelFace, makeTile, pickVowel, refill } from './letters';
+import { initialBoard, isVowelFace, makeTile, pickConsonantAt, pickVowel, refill, tierIndex } from './letters';
 import { findAnyWord, resolvePattern } from './solver';
 import { scoreWord } from './scoring';
 import { findPath } from '../utils/findPath';
@@ -47,6 +47,14 @@ function shuffle<T>(arr: T[]): T[] {
 
 function hasItems(s: RunState): boolean {
   return Object.values(s.inventory).some((n) => n > 0);
+}
+
+/** Which items the shop sells right now. */
+export function itemForSale(s: RunState, id: ItemId): boolean {
+  const tier = tierIndex(s.score, s.perks);
+  if (id === 'consonant') return tier <= CONSONANT_MAX_TIER;
+  if (id === 'vowel') return tier > CONSONANT_MAX_TIER;
+  return true;
 }
 
 export function itemPrice(s: RunState, id: ItemId): number {
@@ -237,6 +245,18 @@ export function useCascade(dict: Set<string>) {
       const v = pickVowel();
       tiles[pick.id] = { ...makeTile(pick.id, nextUid++, v, s.perks, false), coin: pick.coin, mult: pick.mult };
       msg = `🅰️ ${pick.face.toUpperCase()} → ${v.toUpperCase()}`;
+    } else if (id === 'consonant') {
+      const cands = tiles.filter((t) => isVowelFace(t.face));
+      if (cands.length === 0) return flash('info', 'No vowels to replace');
+      const pick = cands[Math.floor(Math.random() * cands.length)];
+      const c = pickConsonantAt(s.score, s.perks);
+      tiles[pick.id] = { ...makeTile(pick.id, nextUid++, c, s.perks, false), coin: pick.coin, mult: pick.mult };
+      msg = `🅱️ ${pick.face.toUpperCase()} → ${c === 'qu' ? 'Qu' : c.toUpperCase()}`;
+    } else if (id === 'shuffle') {
+      tiles = shuffle(tiles).map((t, i) => ({
+        ...t, id: i, row: Math.floor(i / 4), col: i % 4, uid: nextUid++,
+      }));
+      msg = '🔀 Board shuffled';
     } else {
       const vals = shuffle(tiles.map((t) => t.value));
       tiles = tiles.map((t, i) => ({ ...t, value: vals[i] }));
@@ -250,7 +270,7 @@ export function useCascade(dict: Set<string>) {
   const buyItem = useCallback((id: ItemId) => {
     const s = ref.current;
     const cost = itemPrice(s, id);
-    if (s.phase !== 'shop' || s.coins < cost) return;
+    if (s.phase !== 'shop' || s.coins < cost || !itemForSale(s, id)) return;
     commit({
       ...s,
       coins: s.coins - cost,
