@@ -6,6 +6,7 @@ import { areAdjacent } from './adjacency';
  * Returns null if no valid trace exists. Returns the first valid path found.
  *
  * Word should be lowercase. 'Qu' tiles consume two characters ('qu') of the word.
+ * '*' tiles (wildcards, used by Cascade) match any single character.
  */
 export function findPath(tiles: Tile[], word: string): number[] | null {
   if (!word) return null;
@@ -28,12 +29,15 @@ function dfs(
   visited: boolean[],
   path: number[]
 ): boolean {
-  const face = tiles[tIdx].face; // 1 char, or 'qu' (2 chars)
-  if (word.slice(wIdx, wIdx + face.length) !== face) return false;
+  const face = tiles[tIdx].face; // 1 char, 'qu' (2 chars), or '*' (wildcard)
+  const isWild = face === '*';
+  const span = isWild ? 1 : face.length;
+  if (wIdx + span > word.length) return false;
+  if (!isWild && word.slice(wIdx, wIdx + span) !== face) return false;
 
   visited[tIdx] = true;
   path.push(tIdx);
-  const newWIdx = wIdx + face.length;
+  const newWIdx = wIdx + span;
 
   if (newWIdx === word.length) return true;
 

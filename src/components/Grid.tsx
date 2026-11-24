@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from 'react';
 import type { Tile as TileType } from '../types';
 import { Tile } from './Tile';
 
@@ -11,6 +12,9 @@ interface GridProps {
   onDragEnter: (idx: number) => void;
   onDragEnd: () => void;
   onCancelDrag: () => void;
+  /** Optional custom tile renderer. Must render an element with data-tile-index. */
+  renderTile?: (tile: TileType, isInPath: boolean, isPathHead: boolean) => ReactNode;
+  className?: string;
 }
 
 // Pointer must be within INNER_HIT_FRACTION of tile width from center.
@@ -59,6 +63,8 @@ export function Grid({
   onDragEnter,
   onDragEnd,
   onCancelDrag,
+  renderTile,
+  className,
 }: GridProps) {
   const pathSet = new Set(path);
   const pathHead = path.length > 0 ? path[path.length - 1] : -1;
@@ -105,13 +111,17 @@ export function Grid({
 
   return (
     <div
-      className={`grid${greyed ? ' grid-greyed' : ''}`}
+      className={`grid${greyed ? ' grid-greyed' : ''}${className ? ` ${className}` : ''}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
     >
-      {tiles.map((tile) => (
+      {tiles.map((tile) => renderTile ? (
+        <Fragment key={tile.id}>
+          {renderTile(tile, pathSet.has(tile.id), tile.id === pathHead)}
+        </Fragment>
+      ) : (
         <Tile
           key={tile.id}
           tile={tile}
