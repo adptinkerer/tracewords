@@ -301,3 +301,75 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
   }
 }
+
+/* ---- Trace line overlay ---- */
+.c-board { position: relative; width: 100%; max-width: 460px; }
+.c-trace {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible; z-index: 2;
+}
+.c-trace polyline { fill: none; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.c-trace-play polyline { stroke: rgba(144, 202, 249, .55); }
+.c-trace-play circle { fill: rgba(144, 202, 249, .8); }
+.c-trace-reveal polyline { stroke: rgba(255, 213, 79, .75); }
+.c-trace-reveal circle { fill: #ffd54f; }
+.c-trace .c-trace-head { fill: none !important; stroke-width: 3; }
+.c-trace-play .c-trace-head { stroke: rgba(144, 202, 249, .7); }
+.c-trace-reveal .c-trace-head { stroke: #ffd54f; animation: c-ping .7s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes c-ping { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+
+/* ---- Reveal ---- */
+.c-reveal-count {
+  flex: none; font-size: .8rem; font-weight: 700; color: #90a4c8;
+  font-variant-numeric: tabular-nums;
+}
+.c-reveal-list {
+  list-style: none;
+  display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px;
+  max-height: 420px; overflow-y: auto;
+}
+.c-reveal-list li {
+  padding: 3px 8px; border-radius: 6px;
+  background: #16213e; font-size: .85rem; font-weight: 700; letter-spacing: .03em;
+  animation: c-in .25s ease-out both;
+}
+.c-reveal-list li b { color: #ffd54f; font-weight: 800; margin-left: 2px; }
+.c-reveal-empty { text-align: center; }
+.c-reveal-mobile { display: none; }
+
+/* ---- Buttons + confirm sheet ---- */
+.c-btn {
+  flex: 1; min-height: 48px; padding: 0 18px; border-radius: 10px;
+  font: inherit; font-weight: 700; font-size: 1rem; cursor: pointer;
+  touch-action: manipulation; border: 2px solid transparent;
+}
+.c-btn:focus-visible { outline: 2px solid #ffd54f; outline-offset: 2px; }
+.c-btn-primary { background: #1565c0; color: #fff; }
+.c-btn-ghost { background: transparent; color: #e0e0e0; border-color: #37474f; }
+.c-btn-danger { background: #c62828; color: #fff; }
+
+.c-modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(8, 10, 24, .72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.c-modal {
+  width: 100%; max-width: 380px;
+  background: #16213e; border: 1px solid #1f2a44; border-radius: 14px;
+  padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .6);
+  animation: c-in .2s ease-out both;
+}
+.c-modal h2 { font-size: 1.3rem; color: #fff; }
+.c-modal p { color: #b0bec5; line-height: 1.45; }
+.c-modal p strong { color: #fff; }
+.c-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+@media (max-width: 768px) {
+  .c-playing .c-board { flex: none; width: auto; max-width: none; }
+  .c-playing .c-reveal-mobile { display: block; width: 100%; flex: none; }
+  .c-playing .c-reveal-mobile .c-reveal-list { height: 64px; max-height: none; gap: 4px; }
+  .c-playing .c-reveal-mobile .c-reveal-list li { font-size: .75rem; padding: 2px 6px; }
+  .c-trace polyline { stroke-width: 7; }
+}

@@ -87,3 +87,37 @@ export function resolvePattern(
   }
   return dupe ? { word: dupe, duplicate: true } : null;
 }
+
+export interface FoundWord { word: string; path: number[] }
+
+/** Every playable word (length >= minLen, not in `used`) with one tracing path. */
+export function findAllWords(
+  tiles: CTile[], dict: Set<string>, minLen: number, used: Set<string>,
+): FoundWord[] {
+  const arr = sortedDict(dict);
+  const neighbors = tiles.map((t) => tiles.filter((o) => areAdjacent(t, o)).map((o) => o.id));
+  const visited = new Array(tiles.length).fill(false);
+  const path: number[] = [];
+  const out = new Map<string, number[]>();
+
+  function visit(idx: number, next: string) {
+    if (!hasPrefix(arr, next)) return;
+    visited[idx] = true;
+    path.push(idx);
+    if (next.length >= minLen && dict.has(next) && !used.has(next) && !out.has(next)) {
+      out.set(next, path.slice());
+    }
+    for (const n of neighbors[idx]) if (!visited[n]) dfs(n, next);
+    path.pop();
+    visited[idx] = false;
+  }
+
+  function dfs(idx: number, current: string) {
+    const face = tiles[idx].face;
+    if (face === '*') { for (const ch of ALPHA) visit(idx, current + ch); return; }
+    visit(idx, current + face);
+  }
+
+  for (let i = 0; i < tiles.length; i++) dfs(i, '');
+  return Array.from(out, ([word, p]) => ({ word, path: p }));
+}

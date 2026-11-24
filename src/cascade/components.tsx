@@ -1,4 +1,4 @@
-import type { CTile, ItemId, PerkId, PlayedWord, RunState } from './types';
+import type { CTile, ItemId, PerkId, PlayedWord, RevealWord, RunState } from './types';
 import { ITEMS, ITEM_BY_ID, PERK_BY_ID } from './items';
 import { MAX_PERKS, TIERS, levelTarget, minLength, perkPrice } from './config';
 import { tierIndex } from './letters';
@@ -75,7 +75,7 @@ export function Inventory({
         ))}
       </div>
       <button className={`c-end${s.stuck ? ' c-end-urgent' : ''}`} onClick={onEnd}>
-        {s.stuck ? 'End run' : 'End'}
+        Give up
       </button>
     </div>
   );
@@ -145,12 +145,13 @@ export function GameOver({ s, best, onRestart }: { s: RunState; best: Best; onRe
   const top = s.history.reduce<PlayedWord | null>((b, w) => (!b || w.pts > b.pts ? w : b), null);
   return (
     <div className="c-panel c-over">
-      <h2>{s.stuck ? 'Stuck!' : 'Run over'}</h2>
+      <h2>{s.gaveUp ? 'You gave up' : s.stuck ? 'Stuck!' : 'Run over'}</h2>
       <div className="c-over-stats">
         <div><strong>{s.score}</strong><span>score</span></div>
         <div><strong>{s.streak}</strong><span>words</span></div>
         <div><strong>{s.level}</strong><span>level</span></div>
       </div>
+      {s.gaveUp && <LeftOnBoard s={s} />}
       {top && <p className="c-sub">Best word: <strong>{top.word.toUpperCase()}</strong> for {top.pts} ({top.breakdown})</p>}
       <p className="c-sub">Personal best: {best.score} pts · {best.streak} words · level {best.level}</p>
       <button className="action-btn" onClick={onRestart}>New run</button>
@@ -195,3 +196,49 @@ export function WordLog({ history }: { history: PlayedWord[] }) {
 }
 
 export { ITEM_BY_ID };
+
+function LeftOnBoard({ s }: { s: RunState }) {
+  const n = s.remaining.length;
+  if (n === 0) return <p className="c-sub">There were no words left on the board.</p>;
+  const top = s.remaining.reduce((b, w) => (w.pts > b.pts ? w : b));
+  return (
+    <p className="c-sub">
+      {n} word{n > 1 ? 's were' : ' was'} still on the board. Most valuable: <strong>{top.word.toUpperCase()}</strong> for {top.pts}.
+    </p>
+  );
+}
+
+export function ConfirmGiveUp({
+  s, onCancel, onConfirm,
+}: { s: RunState; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="c-modal-backdrop" onClick={onCancel}>
+      <div
+        className="c-modal" role="dialog" aria-modal="true" aria-labelledby="c-giveup-title"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => { if (e.key === 'Escape') onCancel(); }}
+      >
+        <h2 id="c-giveup-title">Give up this run?</h2>
+        <p>
+          Your run ends at <strong>{s.score} points</strong> and <strong>{s.streak} words</strong>.
+          Then every word still on the board gets traced for you.
+        </p>
+        <div className="c-modal-actions">
+          <button className="c-btn c-btn-ghost" onClick={onCancel} autoFocus>Keep playing</button>
+          <button className="c-btn c-btn-danger" onClick={onConfirm}>Give up</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function RevealList({ words, revealed }: { words: RevealWord[]; revealed: number }) {
+  if (words.length === 0) return <p className="c-sub c-reveal-empty">No words were left on the board.</p>;
+  return (
+    <ol className="c-reveal-list">
+      {words.slice(0, revealed).map((w) => (
+        <li key={w.word}><span>{w.word.toUpperCase()}</span> <b>{w.pts}</b></li>
+      ))}
+    </ol>
+  );
+}

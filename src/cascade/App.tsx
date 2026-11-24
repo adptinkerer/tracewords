@@ -6,7 +6,11 @@ import { Grid } from '../components/Grid';
 import { TypingInput } from '../components/TypingInput';
 import { useCascade } from './useCascade';
 import type { CTile } from './types';
-import { CascadeTile, GameOver, Hud, Inventory, PerkChips, Shop, Title, WordLog, type Best } from './components';
+import {
+  CascadeTile, ConfirmGiveUp, GameOver, Hud, Inventory, PerkChips, RevealList, Shop, Title, WordLog, type Best,
+} from './components';
+import { TraceLine } from './TraceLine';
+import { useReveal } from './reveal';
 
 const BEST_KEY = 'cascade-best';
 
@@ -24,8 +28,13 @@ export default function App() {
   const s = g.state;
   const [best, setBest] = useState<Best>(loadBest);
 
-  const playing = s.phase === 'playing' || s.phase === 'clearing';
+  const [confirming, setConfirming] = useState(false);
+  const revealing = s.phase === 'reveal';
+  const rv = useReveal(revealing ? s.remaining : null);
+  const playing = s.phase === 'playing' || s.phase === 'clearing' || revealing;
   const onBoard = playing;
+
+  useEffect(() => { if (s.phase !== 'playing') setConfirming(false); }, [s.phase]);
 
   // Record personal best when a run ends.
   useEffect(() => {
@@ -45,7 +54,7 @@ export default function App() {
     if (!playing) return;
     document.body.classList.add('is-playing');
     const onMove = (e: TouchEvent) => {
-      if ((e.target as HTMLElement | null)?.closest('.c-log')) return;
+      if ((e.target as HTMLElement | null)?.closest('.c-log, .c-reveal-list')) return;
       e.preventDefault();
     };
     document.addEventListener('touchmove', onMove, { passive: false });
@@ -55,7 +64,8 @@ export default function App() {
     };
   }, [playing]);
 
-  const pathWord = s.path
+  const shownPath = revealing ? rv.path : s.path;
+  const pathWord = shownPath
     .map((i) => s.tiles[i].face)
     .map((f) => (f === 'qu' ? 'Qu' : f === '*' ? '?' : f.toUpperCase()))
     .join('');
@@ -69,7 +79,18 @@ export default function App() {
 
       {onBoard && (
         <>
-          {s.targeting ? (
+          {revealing ? (
+            <div className={`current-word c-current${rv.current && rv.path.length === rv.current.path.length ? ' c-flash-valid' : ''}`}>
+              <span className="current-word-text">
+                {rv.current
+                  ? (rv.path.length === rv.current.path.length
+                    ? `${rv.current.word.toUpperCase()} +${rv.current.pts}`
+                    : pathWord || '\u00a0')
+                  : s.remaining.length ? `${s.remaining.length} words left on the board` : 'Nothing left to play'}
+              </span>
+              {rv.current && <span className="c-reveal-count">{rv.revealed + (rv.path.length === rv.current.path.length ? 0 : 1)}/{s.remaining.length}</span>}
+            </div>
+          ) : s.targeting ? (
             <button className="current-word c-current c-aim" onClick={() => g.applyItem(s.targeting!)}>
               <span className="current-word-text">
                 {s.targeting === 'bomb' ? '💣 Tap a tile to blow up' : '❔ Tap a tile to make blank'}
@@ -82,7 +103,7 @@ export default function App() {
             </div>
           )}
 
-          {!s.targeting && (
+          {!s.targeting && !revealing && (
             <TypingInput
               active={s.phase === 'playing'}
               tiles={s.tiles}
@@ -92,9 +113,10 @@ export default function App() {
           )}
 
           <div className="play-area">
+            <div className="c-board">
             <Grid
               tiles={s.tiles}
-              path={s.path}
+              path={shownPath}
               active={s.phase === 'playing'}
               hideLetters={false}
               greyed={false}
@@ -114,24 +136,52 @@ export default function App() {
                 />
               )}
             />
+            <TraceLine path={shownPath} tone={revealing ? 'reveal' : 'play'} />
+            </div>
             <div className="c-side">
-              <PerkChips perks={s.perks} />
-              <WordLog history={s.history} />
+              {revealing ? (
+                <RevealList words={s.remaining} revealed={rv.revealed} />
+              ) : (
+                <>
+                  <PerkChips perks={s.perks} />
+                  <WordLog history={s.history} />
+                </>
+              )}
             </div>
           </div>
 
-          <div className="c-recent" aria-hidden="true">
-            {s.history.slice(0, 6).map((w, i) => (
-              <span key={`${w.word}-${i}`}>{w.word.toUpperCase()} <b>+{w.pts}</b></span>
-            ))}
-          </div>
-
-          <Inventory s={s} onUse={g.applyItem} onEnd={g.endRun} />
+          {revealing ? (
+            <>
+              <div className="c-reveal-mobile"><RevealList words={s.remaining} revealed={rv.revealed} /></div>
+              <div className="c-toolbar">
+                {rv.done
+                  ? <button className="c-btn c-btn-primary" onClick={g.finishReveal}>See results</button>
+                  : <button className="c-btn c-btn-ghost" onClick={rv.skip}>Skip to the full list</button>}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="c-recent" aria-hidden="true">
+                {s.history.slice(0, 6).map((w, i) => (
+                  <span key={`${w.word}-${i}`}>{w.word.toUpperCase()} <b>+{w.pts}</b></span>
+                ))}
+              </div>
+              <Inventory s={s} onUse={g.applyItem} onEnd={() => setConfirming(true)} />
+            </>
+          )}
         </>
       )}
 
       {s.phase === 'shop' && (
         <Shop s={s} onBuyItem={g.buyItem} onBuyPerk={g.buyPerk} onNext={g.nextLevel} />
+      )}
+
+      {confirming && s.phase === 'playing' && (
+        <ConfirmGiveUp
+          s={s}
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => { setConfirming(false); g.giveUp(); }}
+        />
       )}
 
       {s.phase === 'over' && <GameOver s={s} best={best} onRestart={g.startRun} />}

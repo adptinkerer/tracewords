@@ -5,7 +5,8 @@ import {
 } from './config';
 import { ITEM_BY_ID, PERKS } from './items';
 import { initialBoard, isVowelFace, makeTile, pickConsonantAt, pickVowel, refill, tierIndex } from './letters';
-import { findAnyWord, resolvePattern } from './solver';
+import { findAllWords, findAnyWord, resolvePattern } from './solver';
+import { revealOrder } from './reveal';
 import { scoreWord } from './scoring';
 import { findPath } from '../utils/findPath';
 
@@ -32,6 +33,8 @@ function freshRun(): RunState {
     flash: null,
     history: [],
     stuck: false,
+    gaveUp: false,
+    remaining: [],
     nextUid,
   };
 }
@@ -299,13 +302,30 @@ export function useCascade(dict: Set<string>) {
     commit(withStuckCheck({ ...s, phase: 'playing' }));
   }, [commit, withStuckCheck, dict]);
 
+  /** Give up: list every word still on the board, then trace them (phase 'reveal'). */
+  const giveUp = useCallback(() => {
+    const s = ref.current;
+    if (s.phase !== 'playing') return;
+    const words = findAllWords(s.tiles, dict, minLength(s.level), s.used).map(({ word, path }) => ({
+      word, path, pts: scoreWord(path, s.tiles, word, s.perks, s.streak).pts,
+    }));
+    commit({
+      ...s, phase: 'reveal', gaveUp: true, path: [], targeting: null, flash: null,
+      remaining: revealOrder(words),
+    });
+  }, [commit, dict]);
+
+  const finishReveal = useCallback(() => {
+    commit({ ...ref.current, phase: 'over' });
+  }, [commit]);
+
   const endRun = useCallback(() => {
     commit({ ...ref.current, phase: 'over', path: [], targeting: null });
   }, [commit]);
 
   return {
     state,
-    startRun, endRun, nextLevel,
+    startRun, endRun, giveUp, finishReveal, nextLevel,
     onDragStart, onDragEnter, onDragEnd, onCancelDrag,
     setPath, submitTypedWord,
     applyItem, buyItem, buyPerk,

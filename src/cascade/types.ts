@@ -17,7 +17,9 @@ export type PerkId =
   | 'heavy' | 'goldrush' | 'longgame' | 'interest' | 'lucky'
   | 'magnet' | 'easy' | 'wildvalue' | 'streaker' | 'demo';
 
-export type Phase = 'title' | 'playing' | 'clearing' | 'shop' | 'over';
+export type Phase = 'title' | 'playing' | 'clearing' | 'shop' | 'reveal' | 'over';
+
+export interface RevealWord { word: string; path: number[]; pts: number }
 
 export interface Flash {
   kind: 'valid' | 'invalid' | 'duplicate' | 'short' | 'info';
@@ -50,5 +52,7 @@ export interface RunState {
   flash: Flash | null;
   history: PlayedWord[];
   stuck: boolean;
+  gaveUp: boolean;
+  remaining: RevealWord[];
   nextUid: number;
 }
