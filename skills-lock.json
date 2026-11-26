@@ -1,0 +1,229 @@
+{
+  "version": 2,
+  "skills": {
+    "ad-jingle": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/ad-jingle/SKILL.md",
+      "computedHash": "4869fd0c20c8775870c70d39b83ede21753d592902056785bef0147eb61addf6"
+    },
+    "ai-song-formatter": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/ai-song-formatter/SKILL.md",
+      "computedHash": "f2e1798f669aa54a6993ae534a752738773d2f03e3d58453f21e0b4db49d10cc"
+    },
+    "arrangement-advisor": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/arrangement-advisor/SKILL.md",
+      "computedHash": "e536afbeb17fcc039c3eb08dabce43abd9ce6b36133901177340ea7d2d705a60"
+    },
+    "artist-branding": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/artist-branding/SKILL.md",
+      "computedHash": "26cf52003e95069427e1794dc6bad010835f8a7f21b3ebf89dd8855f787dd9d4"
+    },
+    "bpm-finder": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/bpm-finder/SKILL.md",
+      "computedHash": "b7f67cfc44a1dca635eb17a5634c65e0dcf878a0c7bafe4938db2fb3065f09d6"
+    },
+    "chord-progression-builder": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/chord-progression-builder/SKILL.md",
+      "computedHash": "dd42d7a6869ed9309d9b5098d67dcbe38beefe15a3430f7c4b50b3c1b119b284"
+    },
+    "chorus-builder": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/chorus-builder/SKILL.md",
+      "computedHash": "7d1e706961e5a63da062cb91670ad651f8688ab9d76e7eaef42246b93ecad677"
+    },
+    "cover-art-director": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/cover-art-director/SKILL.md",
+      "computedHash": "d33c098664c0849eda1429232e9caa37fbe5cd8f4672c5a105764f70a6bcc4c6"
+    },
+    "game-soundtrack": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/game-soundtrack/SKILL.md",
+      "computedHash": "e830fc3f6eda2d7d7f87b5753194dac5b4fb8e8632cffc3520eaa3329f37e675"
+    },
+    "genre-expert": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/genre-expert/SKILL.md",
+      "computedHash": "7adb7699056c288a9a741dad38f577a1fd7e5e7a5c78fdf18f4c7022caf0a2c3"
+    },
+    "genre-translator": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/genre-translator/SKILL.md",
+      "computedHash": "07d222714f291a3f9d3b1128f65bb71b7ce31f6ad7e18d55a219b733bf70f0d2"
+    },
+    "hook-writer": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/hook-writer/SKILL.md",
+      "computedHash": "7f4cb1bebafe275868bbfe3b009607cad8b33458c02be6517490ed00fc001fec"
+    },
+    "instrument-expert": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/instrument-expert/SKILL.md",
+      "computedHash": "ecc2aee078ef0de986442a590c27ec72af9d3c6b1590874f48a5a087ba7d34ff"
+    },
+    "instrument-selector": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/instrument-selector/SKILL.md",
+      "computedHash": "f130e7fb715ba63ff0e13fe6bbb839b9f921ac443110e17f3193348345625b0c"
+    },
+    "lyric-translator": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/lyric-translator/SKILL.md",
+      "computedHash": "0c43ad53724bd4f6b5d8f358ed3d48afc45ed80201f32178dee4384f7100feb0"
+    },
+    "lyrics-writer": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/lyrics-writer/SKILL.md",
+      "computedHash": "e0a6f471419146ad1751714a5f6bf0aaa4c7ad4c1a559ff81ca55225bd9859e3"
+    },
+    "melody-writer": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/melody-writer/SKILL.md",
+      "computedHash": "c0be6d901d1f034fe32cab21c5aa5f531a5b788f82dd6b2422bb3563784fa233"
+    },
+    "mixing-feedback": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/mixing-feedback/SKILL.md",
+      "computedHash": "16e8689bd88641df3e3a3f26defe7fe8b7debf0d73d0ded1453ffd3e68537511"
+    },
+    "mood-to-music": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/mood-to-music/SKILL.md",
+      "computedHash": "2b59a63ff599734d400d28a4496050faea10024f745ca57321cdcab42d383ab7"
+    },
+    "music-metadata": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/music-metadata/SKILL.md",
+      "computedHash": "f1c5d706218d193902a5efd0156029d19e9ea50d7cec0d5a7748863c70f0bfea"
+    },
+    "music-prompt-engineer": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/music-prompt-engineer/SKILL.md",
+      "computedHash": "8170a39aeab73b806b56044ec0e4985244a8c5bc4a21ff00ac724e100fcb412f"
+    },
+    "music-theory-tutor": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/music-theory-tutor/SKILL.md",
+      "computedHash": "6e8b5228ec0b74e88298c36b16e92437cc7122ea2a4e94ec55f9f0e5ec4a91a2"
+    },
+    "music-video-concept": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/music-video-concept/SKILL.md",
+      "computedHash": "e5148b91e6a66bb9148b7287a0aedc3fbf21b56aee461cfb478b2b3ca4f6d1dc"
+    },
+    "playlist-video-planner": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/playlist-video-planner/SKILL.md",
+      "computedHash": "1e9c227d0756d403b359dd5a612e928439cf1f7bc7f7ad127b9e9eb3fe76bc07"
+    },
+    "podcast-intro": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/podcast-intro/SKILL.md",
+      "computedHash": "cb8eb1044ef1870d1d8566993fd0c0e8e0e73f13a4b50efbf8121850fbf15d9b"
+    },
+    "prosody-checker": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/prosody-checker/SKILL.md",
+      "computedHash": "722e50e8376550ac9331cac0dc42f9a594f4bf6a7d764598e0024ef7be77c6bd"
+    },
+    "release-checklist": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/release-checklist/SKILL.md",
+      "computedHash": "064f7ffd2e59bac931feda442c1b55d0addb37023d8f2a1d49d9bc679beb788d"
+    },
+    "rhyme-checker": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/rhyme-checker/SKILL.md",
+      "computedHash": "0c23e7d80aadc7b39855d7cb8867f9afe7bf866fece35df54b87b10d01b4c14b"
+    },
+    "song-structure": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/song-structure/SKILL.md",
+      "computedHash": "cfe86ccc0b23e0d78df919eae7d55ed7b06338239ab1d24802908e7e64c57c18"
+    },
+    "song-title-generator": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/song-title-generator/SKILL.md",
+      "computedHash": "52c88317d25f8452b87b62460aa08876934e561e4494c0151df5e861a0e4dd8e"
+    },
+    "songwriting-coach": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/songwriting-coach/SKILL.md",
+      "computedHash": "ea688617c06627c554f0cbddfe1a74c1bb28b81903c162616c360c79bb8b156d"
+    },
+    "youtube-background-music": {
+      "source": "Vocaler-AI/music-skills",
+      "commit": "4479796b9f05e2fc300fee1a848b0effa1993b8a",
+      "sourceType": "github",
+      "skillPath": "skills/youtube-background-music/SKILL.md",
+      "computedHash": "f2bdf6b5031fb23bb1cdac13c11f2ef708f007f8757547f24ffa5411cc0f0f33"
+    }
+  }
+}
